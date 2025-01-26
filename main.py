@@ -20,23 +20,33 @@ def test_queries():
     conn = sqlite3.connect('db/concerts.db')
     cursor = conn.cursor()
 
-    # Test: Fetch all bands
-    print("\nAll Bands:")
+    # Fetch all bands
+    print("=" * 50)
+    print("All Bands:")
     cursor.execute("SELECT * FROM bands")
-    print(cursor.fetchall())
+    bands = cursor.fetchall()
+    for band in bands:
+        print(f"ID: {band[0]}, Name: {band[1]}, Hometown: {band[2]}")
+    print("=" * 50)
 
-    # Test: Fetch all venues
+    # Fetch all venues
     print("\nAll Venues:")
     cursor.execute("SELECT * FROM venues")
-    print(cursor.fetchall())
+    venues = cursor.fetchall()
+    for venue in venues:
+        print(f"ID: {venue[0]}, Title: {venue[1]}, City: {venue[2]}")
+    print("=" * 50)
 
-    # Test: Fetch all concerts
+    # Fetch all concerts
     print("\nAll Concerts:")
     cursor.execute("SELECT * FROM concerts")
-    print(cursor.fetchall())
+    concerts = cursor.fetchall()
+    for concert in concerts:
+        print(f"ID: {concert[0]}, Band ID: {concert[1]}, Venue ID: {concert[2]}, Date: {concert[3]}")
+    print("=" * 50)
 
-    # Test: Fetch a band for a specific concert
-    concert_id = 1
+    # Fetch a band for a specific concert
+    concert_id = 2
     print(f"\nBand for Concert ID {concert_id}:")
     cursor.execute("""
         SELECT bands.name, bands.hometown
@@ -44,10 +54,15 @@ def test_queries():
         JOIN concerts ON bands.id = concerts.band_id
         WHERE concerts.id = ?
     """, (concert_id,))
-    print(cursor.fetchone())
+    band = cursor.fetchone()
+    if band:
+        print(f"Name: {band[0]}, Hometown: {band[1]}")
+    else:
+        print("No band found.")
+    print("=" * 50)
 
-    # Test: Fetch all concerts for a venue
-    venue_id = 1
+    # Fetch all concerts for a venue
+    venue_id = 2
     print(f"\nConcerts for Venue ID {venue_id}:")
     cursor.execute("""
         SELECT concerts.id, concerts.date, bands.name
@@ -55,7 +70,10 @@ def test_queries():
         JOIN bands ON concerts.band_id = bands.id
         WHERE concerts.venue_id = ?
     """, (venue_id,))
-    print(cursor.fetchall())
+    venue_concerts = cursor.fetchall()
+    for concert in venue_concerts:
+        print(f"Concert ID: {concert[0]}, Date: {concert[1]}, Band: {concert[2]}")
+    print("=" * 50)
 
     conn.close()
 

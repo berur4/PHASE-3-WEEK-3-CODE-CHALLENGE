@@ -2,8 +2,6 @@ DROP TABLE IF EXISTS concerts;
 DROP TABLE IF EXISTS bands;
 DROP TABLE IF EXISTS venues;
 
-
-
 CREATE TABLE bands (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -45,26 +43,21 @@ INSERT INTO venues (title, city) VALUES
 ('Kasarani Stadium', 'Nairobi'),
 ('The O2 Arena', 'London'),
 ('Sydney Opera House', 'Sydney'),
-('Hollywood Bowl', 'Los Angeles'),
-('Allianz Arena', 'Munich'),
+('Royal Albert Hall', 'London'),
+('Staples Center', 'Los Angeles'),
 ('Tokyo Dome', 'Tokyo'),
-('The Gorge Amphitheatre', 'Washington'),
-('Red Rocks Amphitheatre', 'Colorado');
+('Barclays Center', 'Brooklyn'),
+('Red Rocks Amphitheatre', 'Colorado Springs');
 
 -- Insert sample concerts
-INSERT INTO concerts (band_id, venue_id, date) VALUES 
-(1, 1, '2025-01-15'),
-(2, 2, '2025-01-20'),
-(3, 3, '2025-02-05'),
-(4, 4, '2025-02-10'),
-(5, 5, '2025-03-01'),
-(6, 6, '2025-03-15'),
-(7, 7, '2025-04-01'),
-(8, 8, '2025-04-20'),
-(9, 9, '2025-05-05'),
-(10, 10, '2025-05-20'),
-(1, 4, '2025-06-01'),
-(3, 5, '2025-06-10'),
-(5, 1, '2025-07-01'),
-(7, 2, '2025-07-15'),
-(9, 6, '2025-08-05');
+INSERT INTO concerts (band_id, venue_id, date) VALUES
+(1, 1, '2025-02-15'),
+(2, 3, '2025-03-20'),
+(3, 2, '2025-04-10'),
+(4, 4, '2025-05-05'),
+(5, 3, '2025-06-18'),
+(6, 6, '2025-07-12'),
+(7, 5, '2025-08-22'),
+(8, 7, '2025-09-09'),
+(9, 8, '2025-10-17'),
+(10, 9, '2025-11-02');

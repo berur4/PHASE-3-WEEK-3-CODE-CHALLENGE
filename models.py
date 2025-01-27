@@ -2,9 +2,6 @@ import sqlite3
 
 # Utility function for safe database queries
 def safe_execute(query, params=()):
-    """
-    Executes a database query safely with error handling.
-    """
     try:
         with sqlite3.connect("db/concerts.db") as conn:
             cursor = conn.cursor()
@@ -19,32 +16,9 @@ def safe_execute(query, params=()):
 
 class Band:
     @staticmethod
-    def all_introductions(band_id):
-        """
-        Returns an array of strings representing all the introductions for this band.
-        Each introduction is in the form:
-        "Hello {venue city}!!!!! We are {band name} and we're from {band hometown}"
-        """
-        query = """
-            SELECT venues.city, bands.name, bands.hometown
-            FROM concerts
-            JOIN bands ON concerts.band_id = bands.id
-            JOIN venues ON concerts.venue_id = venues.id
-            WHERE bands.id = ?
-        """
-        results = safe_execute(query, (band_id,))
-        return [
-            f"Hello {result[0]}!!!!! We are {result[1]} and we're from {result[2]}"
-            for result in results
-        ]
-
-    @staticmethod
     def concerts(band_id):
         query = "SELECT * FROM concerts WHERE band_id = ?"
-        results = safe_execute(query, (band_id,))
-        if not results:
-            print(f"No concerts found for band ID {band_id}.")
-        return results
+        return safe_execute(query, (band_id,))
 
     @staticmethod
     def venues(band_id):
@@ -61,6 +35,21 @@ class Band:
         safe_execute(query, (band_id, venue_id, date))
 
     @staticmethod
+    def all_introductions(band_id):
+        query = """
+            SELECT venues.city, bands.name, bands.hometown
+            FROM concerts
+            JOIN bands ON concerts.band_id = bands.id
+            JOIN venues ON concerts.venue_id = venues.id
+            WHERE bands.id = ?
+        """
+        results = safe_execute(query, (band_id,))
+        return [
+            f"Hello {result[0]}!!!!! We are {result[1]} and we're from {result[2]}"
+            for result in results
+        ]
+
+    @staticmethod
     def most_performances():
         query = """
             SELECT bands.*, COUNT(concerts.id) as num_concerts
@@ -73,17 +62,22 @@ class Band:
         result = safe_execute(query)
         if result:
             return result[0]
-        print("No bands found.")
         return None
+
+    @staticmethod
+    def test_queries():
+        print("=" * 50)
+        print("All Bands:")
+        bands = safe_execute("SELECT * FROM bands")
+        for band in bands:
+            print(f"ID: {band[0]}, Name: {band[1]}, Hometown: {band[2]}")
+        print("=" * 50)
 
 class Venue:
     @staticmethod
     def concerts(venue_id):
         query = "SELECT * FROM concerts WHERE venue_id = ?"
-        results = safe_execute(query, (venue_id,))
-        if not results:
-            print(f"No concerts found for venue ID {venue_id}.")
-        return results
+        return safe_execute(query, (venue_id,))
 
     @staticmethod
     def bands(venue_id):
@@ -93,6 +87,12 @@ class Venue:
             WHERE concerts.venue_id = ?
         """
         return safe_execute(query, (venue_id,))
+
+    @staticmethod
+    def concert_on(date):
+        query = "SELECT * FROM concerts WHERE date = ? LIMIT 1"
+        result = safe_execute(query, (date,))
+        return result[0] if result else None
 
     @staticmethod
     def most_frequent_band(venue_id):
@@ -106,10 +106,16 @@ class Venue:
             LIMIT 1
         """
         result = safe_execute(query, (venue_id,))
-        if result:
-            return result[0]
-        print(f"No frequent band found for venue ID {venue_id}.")
-        return None
+        return result[0] if result else None
+
+    @staticmethod
+    def test_queries():
+        print("=" * 50)
+        print("All Venues:")
+        venues = safe_execute("SELECT * FROM venues")
+        for venue in venues:
+            print(f"ID: {venue[0]}, Title: {venue[1]}, City: {venue[2]}")
+        print("=" * 50)
 
 class Concert:
     @staticmethod
@@ -118,10 +124,7 @@ class Concert:
             SELECT * FROM bands WHERE id = (SELECT band_id FROM concerts WHERE id = ?)
         """
         result = safe_execute(query, (concert_id,))
-        if not result:
-            print(f"No band found for concert ID {concert_id}.")
-            return None
-        return result[0]
+        return result[0] if result else None
 
     @staticmethod
     def venue(concert_id):
@@ -129,10 +132,7 @@ class Concert:
             SELECT * FROM venues WHERE id = (SELECT venue_id FROM concerts WHERE id = ?)
         """
         result = safe_execute(query, (concert_id,))
-        if not result:
-            print(f"No venue found for concert ID {concert_id}.")
-            return None
-        return result[0]
+        return result[0] if result else None
 
     @staticmethod
     def hometown_show(concert_id):
@@ -144,9 +144,7 @@ class Concert:
             WHERE concerts.id = ?
         """
         result = safe_execute(query, (concert_id,))
-        if result and result[0][0] == 1:
-            return True
-        return False
+        return result[0][0] == 1 if result else False
 
     @staticmethod
     def introduction(concert_id):
@@ -158,7 +156,15 @@ class Concert:
             WHERE concerts.id = ?
         """
         result = safe_execute(query, (concert_id,))
-        if not result:
-            print(f"No introduction available for concert ID {concert_id}.")
-            return None
-        return f"Hello {result[0][0]}!!!!! We are {result[0][1]} and we're from {result[0][2]}"
+        if result:
+            return f"Hello {result[0][0]}!!!!! We are {result[0][1]} and we're from {result[0][2]}"
+        return None
+
+    @staticmethod
+    def test_queries():
+        print("=" * 50)
+        print("All Concerts:")
+        concerts = safe_execute("SELECT * FROM concerts")
+        for concert in concerts:
+            print(f"ID: {concert[0]}, Band ID: {concert[1]}, Venue ID: {concert[2]}, Date: {concert[3]}")
+        print("=" * 50)

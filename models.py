@@ -19,6 +19,26 @@ def safe_execute(query, params=()):
 
 class Band:
     @staticmethod
+    def all_introductions(band_id):
+        """
+        Returns an array of strings representing all the introductions for this band.
+        Each introduction is in the form:
+        "Hello {venue city}!!!!! We are {band name} and we're from {band hometown}"
+        """
+        query = """
+            SELECT venues.city, bands.name, bands.hometown
+            FROM concerts
+            JOIN bands ON concerts.band_id = bands.id
+            JOIN venues ON concerts.venue_id = venues.id
+            WHERE bands.id = ?
+        """
+        results = safe_execute(query, (band_id,))
+        return [
+            f"Hello {result[0]}!!!!! We are {result[1]} and we're from {result[2]}"
+            for result in results
+        ]
+
+    @staticmethod
     def concerts(band_id):
         query = "SELECT * FROM concerts WHERE band_id = ?"
         results = safe_execute(query, (band_id,))
@@ -55,25 +75,6 @@ class Band:
             return result[0]
         print("No bands found.")
         return None
-
-    @staticmethod
-    def all_introductions(band_id):
-        """
-        Returns a list of introduction strings for all concerts by this band.
-        """
-        query = """
-            SELECT venues.city, bands.name, bands.hometown
-            FROM concerts
-            JOIN bands ON concerts.band_id = bands.id
-            JOIN venues ON concerts.venue_id = venues.id
-            WHERE bands.id = ?
-        """
-        results = safe_execute(query, (band_id,))
-        introductions = [
-            f"Hello {result[0]}!!!!! We are {result[1]} and we're from {result[2]}"
-            for result in results
-        ]
-        return introductions
 
 class Venue:
     @staticmethod

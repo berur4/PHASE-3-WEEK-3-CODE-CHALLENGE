@@ -1,4 +1,5 @@
 import sqlite3
+from models import Band
 
 # Function to run migrations and seed data
 def run_migrations():
@@ -15,7 +16,7 @@ def run_migrations():
     conn.commit()
     conn.close()
 
-# Function to test the database and queries
+# Function to test database queries
 def test_queries():
     conn = sqlite3.connect('db/concerts.db')
     cursor = conn.cursor()
@@ -77,9 +78,20 @@ def test_queries():
 
     conn.close()
 
+# Function to test the Band.all_introductions method
+def test_band_introductions():
+    band_id = 1  # Change this to test with different band IDs
+    introductions = Band.all_introductions(band_id)
+    print(f"Introductions for Band ID {band_id}:")
+    for intro in introductions:
+        print(intro)
+
 if __name__ == '__main__':
     # Run migrations and seed data
     run_migrations()
 
     # Test database queries
     test_queries()
+
+    # Test Band.all_introductions()
+    test_band_introductions()
